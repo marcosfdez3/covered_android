@@ -1,0 +1,48 @@
+<?xml version="1.0" encoding="utf-8"?>
+<vector xmlns:android="http://schemas.android.com/apk/res/android"
+    android:width="400dp"
+    android:height="120dp"
+    android:viewportWidth="400"
+    android:viewportHeight="120">
+
+    <!-- Letra C -->
+    <path
+        android:fillColor="#000000"
+        android:pathData="M30,70c0,-12 9,-20 20,-20c5,0 10,2 13,5l-4,4c-2,-2 -5,-3 -8,-3c-7,0 -11,5 -11,14s4,14 11,14c3,0 6,-1 8,-3l4,4c-3,3 -8,5 -13,5c-11,0 -20,-8 -20,-20z" />
+
+    <!-- Letra O -->
+    <path
+        android:fillColor="#000000"
+        android:pathData="M75,50c-11,0 -20,9 -20,20s9,20 20,20s20,-9 20,-20s-9,-20 -20,-20z M75,60c6,0 10,4 10,10s-4,10 -10,10s-10,-4 -10,-10s4,-10 10,-10z" />
+
+    <!-- Letra V -->
+    <path
+        android:fillColor="#000000"
+        android:pathData="M125,50l9,30l10,-30h6l-13,40h-8l-13,-40h7z" />
+
+    <!-- Letra E -->
+    <path
+        android:fillColor="#000000"
+        android:pathData="M165,50h20v7h-13v6h13v7h-13v6h13v7h-20z M165,70h13v7h-13z" />
+
+    <!-- Letra R -->
+    <path
+        android:fillColor="#000000"
+        android:pathData="M205,50h13c6,0 11,2 14,6c3,4 4,8 4,14s-1,10 -4,14c-3,4 -8,6 -14,6h-8v-13h7c3,0 5,-1 6,-3c1,-2 2,-4 2,-6s-1,-4 -2,-6c-1,-2 -3,-3 -6,-3h-7v-7z M205,70v13h5c3,0 5,-1 7,-3c1,-2 2,-4 2,-7s-1,-5 -2,-7c-2,-2 -4,-3 -7,-3h-5z" />
+
+    <!-- Letra E -->
+    <path
+        android:fillColor="#000000"
+        android:pathData="M245,50h20v7h-13v6h13v7h-13v6h13v7h-20z M245,70h13v7h-13z" />
+
+    <!-- Letra D -->
+    <path
+        android:fillColor="#000000"
+        android:pathData="M285,50h13c6,0 11,2 14,6c3,4 4,8 4,14s-1,10 -4,14c-3,4 -8,6 -14,6h-13z M298,57v26c3,0 6,-1 8,-3c2,-2 3,-5 3,-10s-1,-8 -3,-10c-2,-2 -5,-3 -8,-3z" />
+
+    <!-- Punto -->
+    <path
+        android:fillColor="#000000"
+        android:pathData="M335,80a5,5 0,1 0,10 0a5,5 0,1 0,-10 0z" />
+
+</vector>

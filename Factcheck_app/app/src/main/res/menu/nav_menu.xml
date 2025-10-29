@@ -1,0 +1,28 @@
+<?xml version="1.0" encoding="utf-8"?>
+<menu xmlns:android="http://schemas.android.com/apk/res/android">
+
+    <!-- Item principal para verificación -->
+    <item
+        android:id="@+id/nav_verification"
+        android:icon="@drawable/busqueda"
+        android:title="Verificar Noticia" />
+
+    <item
+        android:id="@+id/nav_settings"
+        android:icon="@drawable/configuracion"
+        android:title="Configuración" />
+
+    <!-- Item de historial con submenu -->
+    <item
+        android:id="@+id/nav_history_header"
+        android:title="Historial"
+        android:icon="@android:drawable/ic_menu_recent_history">
+        <menu>
+            <!-- Los items se agregarán dinámicamente aquí -->
+        </menu>
+    </item>
+
+    <!-- Puedes agregar más items fijos aquí -->
+
+
+</menu>

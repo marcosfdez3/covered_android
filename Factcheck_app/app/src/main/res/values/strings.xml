@@ -1,0 +1,16 @@
+<resources>
+    <string name="app_name">Covered.</string>
+    <string name="navigation_drawer_open">Abrir menú de navegación</string>
+    <string name="navigation_drawer_close">Cerrar menú de navegación</string>
+
+    <!-- Strings existentes -->
+    <string name="verificar_noticia">Verificar Noticia</string>
+    <string name="ver_historial">Ver Historial</string>
+    <string name="texto_noticia">Texto de la noticia</string>
+    <string name="url_opcional">URL (opcional)</string>
+    <string name="verificar">Verificar</string>
+
+    <!-- Strings para evitar errores -->
+    <string name="first_fragment_label">First Fragment</string>
+    <string name="second_fragment_label">Second Fragment</string>
+</resources>

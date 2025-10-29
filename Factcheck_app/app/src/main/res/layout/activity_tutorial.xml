@@ -1,0 +1,163 @@
+<?xml version="1.0" encoding="utf-8"?>
+<androidx.constraintlayout.widget.ConstraintLayout
+    xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent">
+
+    <!-- Background Image -->
+    <ImageView
+        android:id="@+id/imgTutorialBackground"
+        android:layout_width="0dp"
+        android:layout_height="0dp"
+        android:scaleType="centerCrop"
+        app:layout_constraintTop_toTopOf="parent"
+        app:layout_constraintBottom_toBottomOf="parent"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintEnd_toEndOf="parent"/>
+
+    <!-- Overlay para mejor legibilidad -->
+    <View
+        android:layout_width="0dp"
+        android:layout_height="0dp"
+
+        app:layout_constraintTop_toTopOf="parent"
+        app:layout_constraintBottom_toBottomOf="parent"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintEnd_toEndOf="parent"/>
+
+    <!-- Botón Saltar -->
+    <TextView
+        android:id="@+id/btnSkip"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_margin="16dp"
+        android:text="Omitir"
+        android:textColor="#616161"
+        android:textSize="16sp"
+        android:padding="12dp"
+        android:background="?attr/selectableItemBackground"
+        app:layout_constraintTop_toTopOf="parent"
+        app:layout_constraintEnd_toEndOf="parent"/>
+
+    <!-- Contenido del tutorial -->
+    <LinearLayout
+        android:id="@+id/contentLayout"
+        android:layout_width="0dp"
+        android:layout_height="0dp"
+        android:orientation="vertical"
+        android:gravity="center"
+        android:padding="32dp"
+        app:layout_constraintTop_toTopOf="parent"
+        app:layout_constraintBottom_toTopOf="@id/indicatorLayout"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintEnd_toEndOf="parent">
+
+        <!-- Icono/logo -->
+        <ImageView
+            android:id="@+id/imgIcon"
+            android:layout_width="120dp"
+            android:layout_height="120dp"
+            android:layout_marginBottom="40dp"
+            android:src="@drawable/erizo"
+            android:visibility="gone"/>
+
+        <!-- Título -->
+        <TextView
+            android:id="@+id/tvTitle"
+            android:layout_width="match_parent"
+            android:layout_height="350dp"
+            android:layout_marginBottom="24dp"
+            android:fontFamily="@font/inter_medium"
+            android:gravity="center"
+            android:shadowDx="2"
+            android:shadowDy="2"
+            android:shadowRadius="4"
+            android:text="Bienvenido a Covered"
+            android:textColor="#000000"
+            android:textSize="32sp" />
+
+        <!-- Descripción -->
+        <TextView
+            android:id="@+id/tvDescription"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:fontFamily="@font/inter"
+            android:gravity="center"
+            android:lineSpacingExtra="6dp"
+            android:shadowDx="2"
+            android:shadowDy="2"
+            android:shadowRadius="4"
+            android:text="La aplicación que te ayuda a verificar la veracidad de noticias e información"
+            android:textColor="#000000"
+            android:textSize="18sp" />
+
+    </LinearLayout>
+
+    <!-- Indicadores (dots) -->
+    <LinearLayout
+        android:id="@+id/indicatorLayout"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:orientation="horizontal"
+        android:layout_marginBottom="32dp"
+        android:gravity="center"
+        app:layout_constraintBottom_toTopOf="@id/btnNext"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintEnd_toEndOf="parent">
+
+        <!-- Los indicadores se añadirán programáticamente -->
+    </LinearLayout>
+
+    <!-- Botones de navegación -->
+    <LinearLayout
+        android:id="@+id/btnNext"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:orientation="horizontal"
+        android:padding="16dp"
+        android:background="@color/white"
+        android:gravity="center"
+        app:layout_constraintBottom_toBottomOf="parent"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintEnd_toEndOf="parent">
+
+        <Button
+            android:id="@+id/btnPrevious"
+            android:layout_width="100dp"
+            android:layout_height="56dp"
+            android:paddingLeft="36dp"
+            android:elevation="0dp"
+            android:drawableStart="@drawable/arrow_left_tutorial"
+            android:layout_marginEnd="8dp"
+            android:background="@color/white"
+            android:textColor="#FFFFFF"
+            android:stateListAnimator="@null"
+            android:visibility="gone"/>
+
+        <Button
+            android:id="@+id/btnNextPage"
+            android:layout_width="100dp"
+            android:layout_height="56dp"
+            android:paddingLeft="36dp"
+            android:elevation="0dp"
+            android:drawableStart="@drawable/arrow_right_tutorial"
+            android:background="@color/white"
+            android:textColor="#FFFFFF"
+            android:stateListAnimator="@null"
+            />
+
+        <Button
+            android:id="@+id/btnFinish"
+            android:layout_width="100dp"
+            android:layout_height="56dp"
+            android:paddingLeft="36dp"
+            android:elevation="0dp"
+            android:drawableStart="@drawable/ic_check_circle"
+            android:background="@color/white"
+            android:textColor="#FFFFFF"
+            android:stateListAnimator="@null"
+            android:visibility="gone"/>
+    </LinearLayout>
+
+</androidx.constraintlayout.widget.ConstraintLayout>

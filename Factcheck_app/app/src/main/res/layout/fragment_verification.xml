@@ -1,0 +1,199 @@
+<?xml version="1.0" encoding="utf-8"?>
+<androidx.constraintlayout.widget.ConstraintLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    android:background="#CBE3C5"
+    android:fitsSystemWindows="true">
+
+    <!-- Área de resultados - ARRIBA -->
+    <ScrollView
+        android:id="@+id/scrollView"
+        android:layout_width="0dp"
+        android:layout_height="0dp"
+        android:padding="16dp"
+        android:backgroundTint="#CBE3C5"
+        android:fitsSystemWindows="true"
+        android:fillViewport="true"
+        app:layout_constraintTop_toTopOf="parent"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintBottom_toTopOf="@+id/inputContainer">
+
+        <LinearLayout
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:orientation="vertical"
+            android:background="#CBE3C5"
+            android:gravity="center">
+
+            <!-- Card de resultados -->
+            <androidx.cardview.widget.CardView
+                android:id="@+id/cardResult"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:layout_marginBottom="16dp"
+                android:visibility="gone"
+                app:cardCornerRadius="12dp"
+                app:cardElevation="8dp"
+                app:cardBackgroundColor="#EDEDED">
+
+                <LinearLayout
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:orientation="vertical"
+                    android:padding="20dp">
+
+                    <!-- Header del card -->
+                    <LinearLayout
+                        android:layout_width="match_parent"
+                        android:layout_height="wrap_content"
+                        android:orientation="horizontal"
+                        android:gravity="center_vertical"
+                        android:layout_marginBottom="12dp">
+
+                        <TextView
+                            android:id="@+id/textResultTitle"
+                            android:layout_width="0dp"
+                            android:layout_height="wrap_content"
+                            android:layout_weight="1"
+                            android:text="Resultado de la verificación"
+                            android:textSize="16sp"
+                            android:textStyle="bold"
+                            android:textColor="#1977BF" />
+
+                        <TextView
+                            android:id="@+id/textResultStatus"
+                            android:layout_width="wrap_content"
+                            android:layout_height="wrap_content"
+                            android:text="✅"
+                            android:textSize="14sp"
+                            android:padding="4dp" />
+
+                    </LinearLayout>
+
+                    <!-- Contenido del resultado -->
+                    <TextView
+                        android:id="@+id/textResult"
+                        android:layout_width="match_parent"
+                        android:layout_height="wrap_content"
+                        android:textSize="14sp"
+                        android:textColor="#333333"
+                        android:lineSpacingExtra="4dp"
+                        android:textIsSelectable="true" />
+
+                </LinearLayout>
+
+            </androidx.cardview.widget.CardView>
+
+            <!-- Información adicional -->
+            <LinearLayout
+                android:id="@+id/layoutInfo"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:padding="16dp"
+                android:orientation="vertical">
+
+                <TextView
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:text="Protégete de la desinformación"
+                    android:textSize="28sp"
+                    android:fontFamily="@font/inter_medium"
+                    android:gravity="center"
+                    android:textColor="@android:color/black"
+                    android:layout_marginBottom="8dp" />
+
+                <TextView
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:text="• Ingresa cualquier afirmación o noticia\n• Covered verificará la información\n• Obtendrás resultados basados en fuentes confiables"
+                    android:textSize="14sp"
+                    android:gravity="center"
+                    android:fontFamily="@font/inter"
+                    android:textColor="#929292"
+                    android:lineSpacingExtra="4dp" />
+
+            </LinearLayout>
+
+            <com.airbnb.lottie.LottieAnimationView
+                android:id="@+id/progressBarVerificando"
+                android:layout_width="200dp"
+                android:layout_height="200dp"
+                app:lottie_rawRes="@raw/loading"
+                app:lottie_autoPlay="true"
+                app:lottie_loop="true"
+                android:visibility="gone"/>
+
+        </LinearLayout>
+
+    </ScrollView>
+
+    <!-- Contenedor del input y botón - ABAJO -->
+    <LinearLayout
+        android:id="@+id/inputContainer"
+        android:layout_width="0dp"
+        android:layout_height="wrap_content"
+        android:orientation="horizontal"
+        android:gravity="center_vertical"
+        android:padding="10dp"
+        android:background="#CBE3C5"
+        app:layout_constraintBottom_toBottomOf="parent"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintEnd_toEndOf="parent">
+
+        <!-- Botón izquierdo -->
+        <Button
+            android:id="@+id/buttonLeft"
+            android:layout_width="42dp"
+            android:layout_height="42dp"
+            android:layout_marginEnd="8dp"
+            android:background="@drawable/button_rounded"
+            android:paddingStart="7dp"
+            android:elevation="0dp"
+            android:stateListAnimator="@null"
+            android:drawableStart="@drawable/link3"
+            android:backgroundTint="#626E5E" />
+
+        <!-- EditText con botón interno -->
+        <FrameLayout
+            android:layout_width="0dp"
+            android:layout_height="50dp"
+            android:layout_weight="1"
+            android:background="@drawable/edittext_background">
+
+            <EditText
+                android:id="@+id/editTextInput"
+                android:layout_width="match_parent"
+                android:layout_height="40dp"
+                android:layout_marginEnd="50dp"
+                android:hint="Verifica con Covered..."
+                android:textSize="15dp"
+                android:maxLines="3"
+                android:paddingLeft="10dp"
+                android:paddingBottom="7dp"
+                android:background="@android:color/transparent"
+                android:textColor="@android:color/black"
+                android:textColorHint="@android:color/darker_gray" />
+
+            <Button
+                android:id="@+id/buttonVerify"
+                android:layout_width="30dp"
+                android:layout_height="30dp"
+                android:textColor="@color/white"
+                android:layout_gravity="right"
+                android:background="@drawable/button_rounded"
+                android:textStyle="bold"
+                android:paddingLeft="3dp"
+                android:drawableStart="@drawable/arrow_right"
+                android:layout_marginRight="3dp"
+                android:layout_marginTop="1dp"
+                android:elevation="0dp"
+                android:stateListAnimator="@null"
+                android:backgroundTint="@null"
+                android:backgroundTintMode="multiply"/>
+        </FrameLayout>
+
+    </LinearLayout>
+
+</androidx.constraintlayout.widget.ConstraintLayout>
