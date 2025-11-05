@@ -141,9 +141,9 @@ class VerificationFragment : Fragment() {
 
         hideKeyboard()
 
-        // Ocultar card anterior si está visible
-        if (binding.cardResult.visibility == View.VISIBLE) {
-            binding.cardResult.visibility = View.GONE
+        // Ocultar resultado anterior si está visible
+        if (binding.resultContainer.visibility == View.VISIBLE) {
+            binding.resultContainer.visibility = View.GONE
         }
 
         // Ocultar información y mostrar progress bar
@@ -194,81 +194,76 @@ class VerificationFragment : Fragment() {
         if (resultado.success) {
             val razonamiento = resultado.razonamiento ?: "No se pudo generar un análisis detallado."
 
-            // Configurar el card según el resultado
-            configureCardAppearance(resultado)
+            // Configurar el resultado según el veredicto
+            configureResultAppearance(resultado)
 
             val mensajeCompleto = buildString {
                 append(razonamiento)
             }
 
-            // Mostrar card con animación
-            showCardWithAnimation()
+            // Mostrar resultado con animación
+            showResultWithAnimation()
 
             // Iniciar efecto typewriter
             animateTypewriter(mensajeCompleto, binding.textResult, 35L)
 
         } else {
-            showErrorCard()
+            showErrorResult()
         }
     }
 
-    private fun configureCardAppearance(resultado: VerificationResult) {
-        val (title, status, cardColor) = when (resultado.resultado) {
+    private fun configureResultAppearance(resultado: VerificationResult) {
+        val (title, status, textColor) = when (resultado.resultado) {
             "verificado", "probablemente_verdadero" -> Triple(
                 "✅ Información Verificada",
                 "Verificado",
-                "#FFFFFF"
+                "#1977BF"
             )
             "probablemente_falso" -> Triple(
                 "⚠️ Noticia Falsa",
                 "Incorrecto",
-                "#FFFFFF"
+                "#DC3545"
             )
             "mixto" -> Triple(
                 "🔀 Resultado Mixto",
                 "Mixto",
-                "#FFFFFF"
-
+                "#FF9800"
             )
             "no_verificable", "no_encontrado" -> Triple(
                 "🔍 No Verificable",
                 "No encontrado",
-                "#FFFFFF"
+                "#6C757D"
             )
             else -> Triple(
                 "📊 Análisis de Covered",
                 "Analizado",
-                "#FFFFFF"
+                "#1977BF"
             )
         }
 
         binding.textResultTitle.text = title
         binding.textResultStatus.text = status
-
-
-        // SOLO cambiar el color de fondo del CardView (sin triángulos)
-        binding.cardResult.setCardBackgroundColor(Color.parseColor(cardColor))
+        binding.textResultStatus.setTextColor(Color.parseColor(textColor))
     }
 
-
-    private fun showErrorCard() {
+    private fun showErrorResult() {
         binding.textResultTitle.text = "❌ Error de Verificación"
         binding.textResultStatus.text = "Error"
         binding.textResultStatus.setTextColor(Color.parseColor("#DC3545"))
         binding.textResult.text = "No se pudo completar la verificación. Intenta nuevamente."
-        showCardWithAnimation()
+        showResultWithAnimation()
     }
 
-    private fun showCardWithAnimation() {
-        binding.cardResult.visibility = View.VISIBLE
+    private fun showResultWithAnimation() {
+        binding.resultContainer.visibility = View.VISIBLE
 
         // Animación simple de entrada
-        binding.cardResult.alpha = 0f
-        binding.cardResult.scaleX = 0.9f
-        binding.cardResult.scaleY = 0.9f
-        binding.cardResult.translationY = 20f
+        binding.resultContainer.alpha = 0f
+        binding.resultContainer.scaleX = 0.95f
+        binding.resultContainer.scaleY = 0.95f
+        binding.resultContainer.translationY = 20f
 
-        binding.cardResult.animate()
+        binding.resultContainer.animate()
             .alpha(1f)
             .scaleX(1f)
             .scaleY(1f)
@@ -301,7 +296,7 @@ class VerificationFragment : Fragment() {
         binding.progressBarVerificando.visibility = View.GONE
         binding.buttonVerify.isEnabled = true
 
-        showErrorCard()
+        showErrorResult()
         showMessage("Error: $mensajeError")
     }
 

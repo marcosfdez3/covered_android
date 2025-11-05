@@ -14,7 +14,7 @@ import okhttp3.OkHttpClient
 import java.util.concurrent.TimeUnit
 
 
-private const val BASE_URL = "http://192.168.1.18:8000/"
+private const val BASE_URL = "https://coveredbackend-production.up.railway.app/"
 
 interface FactCheckApiService {
     @POST("verificar/movil")

@@ -27,64 +27,64 @@
             android:background="#CBE3C5"
             android:gravity="center">
 
-            <!-- Card de resultados -->
-            <androidx.cardview.widget.CardView
-                android:id="@+id/cardResult"
+            <!-- Contenedor de resultados - SIN CARD -->
+            <LinearLayout
+                android:id="@+id/resultContainer"
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
-                android:layout_marginBottom="16dp"
+                android:orientation="vertical"
+                android:padding="20dp"
+                android:background="#FFFFFF"
                 android:visibility="gone"
-                app:cardCornerRadius="12dp"
-                app:cardElevation="8dp"
-                app:cardBackgroundColor="#EDEDED">
+                android:elevation="4dp"
+                android:layout_marginBottom="16dp">
 
+                <!-- Header del resultado -->
                 <LinearLayout
                     android:layout_width="match_parent"
                     android:layout_height="wrap_content"
-                    android:orientation="vertical"
-                    android:padding="20dp">
+                    android:orientation="horizontal"
+                    android:gravity="center_vertical"
+                    android:layout_marginBottom="12dp">
 
-                    <!-- Header del card -->
-                    <LinearLayout
-                        android:layout_width="match_parent"
-                        android:layout_height="wrap_content"
-                        android:orientation="horizontal"
-                        android:gravity="center_vertical"
-                        android:layout_marginBottom="12dp">
-
-                        <TextView
-                            android:id="@+id/textResultTitle"
-                            android:layout_width="0dp"
-                            android:layout_height="wrap_content"
-                            android:layout_weight="1"
-                            android:text="Resultado de la verificación"
-                            android:textSize="16sp"
-                            android:textStyle="bold"
-                            android:textColor="#1977BF" />
-
-                        <TextView
-                            android:id="@+id/textResultStatus"
-                            android:layout_width="wrap_content"
-                            android:layout_height="wrap_content"
-                            android:text="✅"
-                            android:textSize="14sp"
-                            android:padding="4dp" />
-
-                    </LinearLayout>
-
-                    <!-- Contenido del resultado -->
                     <TextView
-                        android:id="@+id/textResult"
-                        android:layout_width="match_parent"
+                        android:id="@+id/textResultTitle"
+                        android:layout_width="0dp"
                         android:layout_height="wrap_content"
-                        android:textSize="14sp"
-                        android:textColor="#333333"
-                        android:lineSpacingExtra="4dp"
-                        android:textIsSelectable="true" />
+                        android:layout_weight="1"
+                        android:text="Resultado de la verificación"
+                        android:textSize="18sp"
+                        android:textStyle="bold"
+                        android:textColor="#1977BF" />
+
+                    <TextView
+                        android:id="@+id/textResultStatus"
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content"
+                        android:text="✅"
+                        android:textSize="16sp"
+                        android:padding="4dp" />
 
                 </LinearLayout>
 
-            </androidx.cardview.widget.CardView>
+                <!-- Línea divisoria -->
+                <View
+                    android:layout_width="match_parent"
+                    android:layout_height="1dp"
+                    android:background="#E0E0E0"
+                    android:layout_marginBottom="12dp"/>
+
+                <!-- Contenido del resultado -->
+                <TextView
+                    android:id="@+id/textResult"
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:textSize="15sp"
+                    android:textColor="#333333"
+                    android:lineSpacingExtra="6dp"
+                    android:textIsSelectable="true" />
+
+            </LinearLayout>
 
             <!-- Información adicional -->
             <LinearLayout
