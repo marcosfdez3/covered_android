@@ -13,4 +13,5 @@
     <!-- Strings para evitar errores -->
     <string name="first_fragment_label">First Fragment</string>
     <string name="second_fragment_label">Second Fragment</string>
+    <string name="default_web_client_id">747821930887-b9k01hl3ttp61sm0earmg8jljj9oat2c.apps.googleusercontent.com</string>
 </resources>

@@ -22,20 +22,37 @@ import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.launch
 import kotlinx.coroutines.withContext
+import android.content.SharedPreferences
+import android.content.Intent
+import com.google.firebase.auth.ktx.auth
+import com.google.firebase.ktx.Firebase
 
 
 class MainActivity : AppCompatActivity() {
 
     private lateinit var binding: ActivityMainBinding
     private lateinit var toggle: ActionBarDrawerToggle
-
+    private lateinit var sharedPreferences: SharedPreferences
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
+
+        // Verificar si necesita mostrar login
+        sharedPreferences = getSharedPreferences("CoveredPrefs", MODE_PRIVATE)
+        val shouldShowLogin = !sharedPreferences.getBoolean("skipped_login", false) &&
+                !sharedPreferences.getBoolean("user_logged_in", false) &&
+                Firebase.auth.currentUser == null
+
+        if (shouldShowLogin) {
+            startActivity(Intent(this, LoginActivity::class.java))
+            finish()
+            return
+        }
+
         WindowCompat.setDecorFitsSystemWindows(window, false)
         window.statusBarColor = Color.TRANSPARENT
         WindowInsetsControllerCompat(window, window.decorView).apply {
-            isAppearanceLightStatusBars = true // Iconos blancos (porque tu toolbar es oscuro)
+            isAppearanceLightStatusBars = true
         }
         binding = ActivityMainBinding.inflate(layoutInflater)
         setContentView(binding.root)
@@ -53,7 +70,6 @@ class MainActivity : AppCompatActivity() {
 
         setupNavigationDrawer()
         loadInitialFragment()
-        // Cargar historial real cuando se abre la app
         cargarHistorialReal()
         setupLoginClickListener()
         onBackPressedDispatcher.addCallback(this) {
@@ -68,22 +84,36 @@ class MainActivity : AppCompatActivity() {
     private fun setupLoginClickListener() {
         val navView = findViewById<NavigationView>(R.id.nav_view)
         val headerView = navView.getHeaderView(0)
+        val btnLogin = headerView.findViewById<Button>(R.id.btnAuth)
+
+        val isLogged = sharedPreferences.getBoolean("user_logged_in", false) ||
+                sharedPreferences.getBoolean("skipped_login", false) ||
+                Firebase.auth.currentUser != null
+
+        if (isLogged) {
+            btnLogin.text = "Cerrar Sesión"
+            btnLogin.setOnClickListener {
+                // Limpiar preferencias y cerrar sesión
+                sharedPreferences.edit().clear().apply()
+                Firebase.auth.signOut()
+
+                // Recargar la app
+                val intent = Intent(this, MainActivity::class.java)
+                startActivity(intent)
+                finish()
+            }
+        } else {
+            btnLogin.text = "Iniciar Sesión"
+            btnLogin.setOnClickListener {
+                startActivity(Intent(this, LoginActivity::class.java))
+            }
+        }
 
         // Hacer clickable todo el header
         headerView.setOnClickListener {
-
+            // Opcional: acción al hacer click en el header
         }
-
-        // También el botón específico
-        val btnLogin = headerView.findViewById<Button>(R.id.btnLoginHeader)
-        btnLogin.setOnClickListener {
-
-        }
-
-
-            }
-
-
+    }
 
     private fun setupNavigationDrawer() {
         setSupportActionBar(binding.toolbar)
@@ -146,14 +176,9 @@ class MainActivity : AppCompatActivity() {
         val subMenuHistorial = itemHistorial?.subMenu
 
         if (subMenuHistorial != null) {
-
-
             // Agregar items del historial REAL
             consultasReales.forEach { item ->
                 subMenuHistorial.add(crearTextoMenuHistorial(item))?.apply {
-                    // Icono según el resultado
-
-
                     setOnMenuItemClickListener {
                         mostrarDetalleHistorial(item)
                         binding.drawerLayout.closeDrawer(GravityCompat.START)
@@ -161,7 +186,6 @@ class MainActivity : AppCompatActivity() {
                     }
                 }
             }
-
         }
     }
 
@@ -244,15 +268,22 @@ class MainActivity : AppCompatActivity() {
         }
     }
 
-
     private fun handleNavigationItemSelected(menuItem: MenuItem): Boolean {
+        when (menuItem.itemId) {
+            R.id.nav_verification -> {
+                loadFragment(VerificationFragment())
+            }
+            R.id.nav_settings -> {
+                // Aquí puedes cargar un fragment de configuración
+                showMessage("Configuración - Próximamente")
+            }
+        }
         binding.drawerLayout.closeDrawer(GravityCompat.START)
         return true
     }
 
     private fun loadInitialFragment() {
         loadFragment(VerificationFragment())
-
     }
 
     private fun loadFragment(fragment: Fragment) {
@@ -261,9 +292,7 @@ class MainActivity : AppCompatActivity() {
             .commit()
     }
 
+    private fun showMessage(message: String) {
+        android.widget.Toast.makeText(this, message, android.widget.Toast.LENGTH_SHORT).show()
     }
-
-
-
-
-
+}

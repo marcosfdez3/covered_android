@@ -242,14 +242,10 @@ class VerificationFragment : Fragment() {
         }
 
         binding.textResultTitle.text = title
-        binding.textResultStatus.text = status
-        binding.textResultStatus.setTextColor(Color.parseColor(textColor))
     }
 
     private fun showErrorResult() {
         binding.textResultTitle.text = "❌ Error de Verificación"
-        binding.textResultStatus.text = "Error"
-        binding.textResultStatus.setTextColor(Color.parseColor("#DC3545"))
         binding.textResult.text = "No se pudo completar la verificación. Intenta nuevamente."
         showResultWithAnimation()
     }

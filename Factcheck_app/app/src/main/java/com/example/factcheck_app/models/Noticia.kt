@@ -2,6 +2,8 @@
 package com.example.factcheckapp.models
 
 import com.google.gson.annotations.SerializedName
+import com.google.firebase.auth.ktx.auth
+import com.google.firebase.ktx.Firebase
 
 data class Noticia(
     @SerializedName("texto")
@@ -11,10 +13,12 @@ data class Noticia(
     val url: String? = null,
 
     @SerializedName("usuario_id")
-    val usuarioId: String? = null,
+    val usuarioId: String = Firebase.auth.currentUser?.uid ?: "anonimo",
 
     @SerializedName("dispositivo_id")
-    val dispositivoId: String? = null
+    val dispositivoId: String? = null,
+
+
 )
 
 data class VerificationResult(

@@ -19,6 +19,8 @@ uiGeometry = "1.9.3"
 coreAnimation = "1.0.0"
 material3 = "1.4.0"
 uiText = "1.9.4"
+firebaseAuthKtx = "24.0.1"
+firebaseAuthCommon = "9.8.0"
 
 [libraries]
 androidx-core-ktx = { group = "androidx.core", name = "core-ktx", version.ref = "coreKtx" }
@@ -46,6 +48,8 @@ androidx-compose-ui-geometry = { group = "androidx.compose.ui", name = "ui-geome
 androidx-core-animation = { group = "androidx.core", name = "core-animation", version.ref = "coreAnimation" }
 androidx-compose-material3 = { group = "androidx.compose.material3", name = "material3", version.ref = "material3" }
 androidx-compose-ui-text = { group = "androidx.compose.ui", name = "ui-text", version.ref = "uiText" }
+firebase-auth-ktx = { group = "com.google.firebase", name = "firebase-auth-ktx", version.ref = "firebaseAuthKtx" }
+firebase-auth-common = { group = "com.google.firebase", name = "firebase-auth-common", version.ref = "firebaseAuthCommon" }
 
 [plugins]
 android-application = { id = "com.android.application", version.ref = "agp" }
