@@ -50,6 +50,7 @@ class VerificationFragment : Fragment() {
 
         setupClickListeners()
         setupEditTextValidation()
+        resetUI() // Asegurar que la UI esté en estado inicial
     }
 
     private fun setupClickListeners() {
@@ -125,15 +126,49 @@ class VerificationFragment : Fragment() {
     private fun verifyText() {
         val inputText = binding.editTextInput.text.toString().trim()
 
-        // Detectar automáticamente si es URL
-        val isUrl = isValidUrl(inputText) && !inputText.contains(" ")
-
-        if (isUrl) {
-            // Forzar modo URL incluso si el usuario no activó el toggle
-            realizarVerificacionUrl(inputText)
-        } else {
-            realizarVerificacionUrl(inputText)
+        if (inputText.isEmpty()) {
+            showMessage("Por favor ingresa un texto para verificar")
+            return
         }
+
+        // Validación adicional si está en modo link
+        if (isLinkMode) {
+            if (!isValidUrl(inputText)) {
+                showMessage("Por favor ingresa una URL válida")
+                binding.editTextInput.error = "URL no válida"
+                return
+            }
+        }
+
+        hideKeyboard()
+        showLoadingState() // Mostrar estado de carga
+        binding.editTextInput.text.clear()
+    }
+
+    private fun showLoadingState() {
+        // Ocultar todo excepto el loading
+        binding.layoutInfo.visibility = View.GONE
+        binding.resultContainer.visibility = View.GONE
+
+        // Mostrar loading
+        binding.progressBarVerificando.visibility = View.VISIBLE
+        binding.buttonVerify.isEnabled = false
+
+        // Llamada REAL a la API
+        realizarVerificacionReal(binding.editTextInput.text.toString().trim())
+    }
+
+    private fun showResultState() {
+        binding.progressBarVerificando.visibility = View.GONE
+        binding.buttonVerify.isEnabled = true
+        binding.layoutInfo.visibility = View.GONE // Mantener info oculta después del resultado
+    }
+
+    private fun resetUI() {
+        binding.layoutInfo.visibility = View.VISIBLE
+        binding.resultContainer.visibility = View.GONE
+        binding.progressBarVerificando.visibility = View.GONE
+        binding.buttonVerify.isEnabled = true
     }
 
     private fun isValidUrl(text: String): Boolean {
@@ -145,31 +180,30 @@ class VerificationFragment : Fragment() {
         }
     }
 
-    private fun realizarVerificacionUrl(url: String) {
+    private fun realizarVerificacionReal(texto: String) {
         CoroutineScope(Dispatchers.IO).launch {
             try {
-                // Enviar la URL directamente, no como texto
                 val noticia = Noticia(
-                    texto = "", // Texto vacío
-                    url = url,  // URL en el campo correspondiente
-                    usuarioId = "usuario_android"
+                    texto = texto,
+                    usuarioId = "usuario_android",
+                    dispositivoId = android.os.Build.MODEL
                 )
 
                 val resultado = RetrofitInstance.api.verificarNoticia(noticia)
+
                 withContext(Dispatchers.Main) {
                     mostrarResultadoReal(resultado)
                 }
             } catch (e: Exception) {
                 withContext(Dispatchers.Main) {
-                    mostrarError(e.message ?: "Error procesando URL")
+                    mostrarError(e.message ?: "Error desconocido")
                 }
             }
         }
     }
 
     private fun mostrarResultadoReal(resultado: VerificationResult) {
-        binding.progressBarVerificando.visibility = View.GONE
-        binding.buttonVerify.isEnabled = true
+        showResultState()
 
         if (resultado.success) {
             val razonamiento = resultado.razonamiento ?: "No se pudo generar un análisis detallado."
@@ -269,9 +303,7 @@ class VerificationFragment : Fragment() {
     }
 
     private fun mostrarError(mensajeError: String) {
-        binding.progressBarVerificando.visibility = View.GONE
-        binding.buttonVerify.isEnabled = true
-
+        showResultState()
         showErrorResult()
         showMessage("Error: $mensajeError")
     }
