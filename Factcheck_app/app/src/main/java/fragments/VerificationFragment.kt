@@ -125,35 +125,15 @@ class VerificationFragment : Fragment() {
     private fun verifyText() {
         val inputText = binding.editTextInput.text.toString().trim()
 
-        if (inputText.isEmpty()) {
-            showMessage("Por favor ingresa un texto para verificar")
-            return
+        // Detectar automáticamente si es URL
+        val isUrl = isValidUrl(inputText) && !inputText.contains(" ")
+
+        if (isUrl) {
+            // Forzar modo URL incluso si el usuario no activó el toggle
+            realizarVerificacionUrl(inputText)
+        } else {
+            realizarVerificacionUrl(inputText)
         }
-
-        // Validación adicional si está en modo link
-        if (isLinkMode) {
-            if (!isValidUrl(inputText)) {
-                showMessage("Por favor ingresa una URL válida")
-                binding.editTextInput.error = "URL no válida"
-                return
-            }
-        }
-
-        hideKeyboard()
-
-        // Ocultar resultado anterior si está visible
-        if (binding.resultContainer.visibility == View.VISIBLE) {
-            binding.resultContainer.visibility = View.GONE
-        }
-
-        // Ocultar información y mostrar progress bar
-        binding.layoutInfo.visibility = View.GONE
-        binding.progressBarVerificando.visibility = View.VISIBLE
-        binding.buttonVerify.isEnabled = false
-
-        // Llamada REAL a la API
-        realizarVerificacionReal(inputText)
-        binding.editTextInput.text.clear()
     }
 
     private fun isValidUrl(text: String): Boolean {
@@ -165,23 +145,23 @@ class VerificationFragment : Fragment() {
         }
     }
 
-    private fun realizarVerificacionReal(texto: String) {
+    private fun realizarVerificacionUrl(url: String) {
         CoroutineScope(Dispatchers.IO).launch {
             try {
+                // Enviar la URL directamente, no como texto
                 val noticia = Noticia(
-                    texto = texto,
-                    usuarioId = "usuario_android",
-                    dispositivoId = android.os.Build.MODEL
+                    texto = "", // Texto vacío
+                    url = url,  // URL en el campo correspondiente
+                    usuarioId = "usuario_android"
                 )
 
                 val resultado = RetrofitInstance.api.verificarNoticia(noticia)
-
                 withContext(Dispatchers.Main) {
                     mostrarResultadoReal(resultado)
                 }
             } catch (e: Exception) {
                 withContext(Dispatchers.Main) {
-                    mostrarError(e.message ?: "Error desconocido")
+                    mostrarError(e.message ?: "Error procesando URL")
                 }
             }
         }
