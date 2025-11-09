@@ -141,11 +141,10 @@ class VerificationFragment : Fragment() {
         }
 
         hideKeyboard()
-        showLoadingState() // Mostrar estado de carga
-        binding.editTextInput.text.clear()
+        showLoadingState(inputText) // Pasar el texto a verificar
     }
 
-    private fun showLoadingState() {
+    private fun showLoadingState(textToVerify: String) {
         // Ocultar todo excepto el loading
         binding.layoutInfo.visibility = View.GONE
         binding.resultContainer.visibility = View.GONE
@@ -154,8 +153,11 @@ class VerificationFragment : Fragment() {
         binding.progressBarVerificando.visibility = View.VISIBLE
         binding.buttonVerify.isEnabled = false
 
-        // Llamada REAL a la API
-        realizarVerificacionReal(binding.editTextInput.text.toString().trim())
+        // Limpiar el EditText después de guardar el texto
+        binding.editTextInput.text.clear()
+
+        // Llamada REAL a la API con el texto guardado
+        realizarVerificacionReal(textToVerify)
     }
 
     private fun showResultState() {
@@ -183,11 +185,26 @@ class VerificationFragment : Fragment() {
     private fun realizarVerificacionReal(texto: String) {
         CoroutineScope(Dispatchers.IO).launch {
             try {
-                val noticia = Noticia(
-                    texto = texto,
-                    usuarioId = "usuario_android",
-                    dispositivoId = android.os.Build.MODEL
-                )
+                // Detectar automáticamente si es URL para enviar correctamente al backend
+                val isUrl = isValidUrl(texto) && !texto.contains(" ")
+
+                val noticia = if (isUrl) {
+                    // Si es URL, enviar como URL y texto vacío
+                    Noticia(
+                        texto = "", // Texto vacío
+                        url = texto,  // URL en el campo correspondiente
+                        usuarioId = "usuario_android",
+                        dispositivoId = android.os.Build.MODEL
+                    )
+                } else {
+                    // Si es texto normal, enviar como texto
+                    Noticia(
+                        texto = texto,
+                        url = null,
+                        usuarioId = "usuario_android",
+                        dispositivoId = android.os.Build.MODEL
+                    )
+                }
 
                 val resultado = RetrofitInstance.api.verificarNoticia(noticia)
 
