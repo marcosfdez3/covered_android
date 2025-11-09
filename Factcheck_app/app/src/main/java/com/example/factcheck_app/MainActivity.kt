@@ -295,4 +295,12 @@ class MainActivity : AppCompatActivity() {
     private fun showMessage(message: String) {
         android.widget.Toast.makeText(this, message, android.widget.Toast.LENGTH_SHORT).show()
     }
+
+    // En MainActivity
+    private fun loadUserData() {
+        val sharedPreferences = getSharedPreferences("CoveredPrefs", MODE_PRIVATE)
+        val userName = sharedPreferences.getString("user_name", "Invitado")
+
+        
+    }
 }

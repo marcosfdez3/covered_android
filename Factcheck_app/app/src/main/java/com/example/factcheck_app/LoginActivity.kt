@@ -54,6 +54,7 @@ class LoginActivity : AppCompatActivity() {
         try {
             val gso = GoogleSignInOptions.Builder(GoogleSignInOptions.DEFAULT_SIGN_IN)
                 .requestEmail()
+                .requestProfile()  // ← IMPORTANTE: Solicitar el perfil para obtener el nombre
                 .build()
             googleSignInClient = GoogleSignIn.getClient(this, gso)
         } catch (e: Exception) {
@@ -83,10 +84,21 @@ class LoginActivity : AppCompatActivity() {
             val task = GoogleSignIn.getSignedInAccountFromIntent(data)
             try {
                 val account = task.getResult(ApiException::class.java)
-                // Guardar estado de login
-                sharedPreferences.edit().putBoolean(KEY_USER_LOGGED_IN, true).apply()
-                showMessage("¡Bienvenido!")
+
+                // ✅ OBTENER Y GUARDAR LA INFORMACIÓN DEL USUARIO
+                val userName = account?.displayName ?: "Usuario"
+                val userEmail = account?.email ?: ""
+
+                // Guardar en SharedPreferences
+                val editor = sharedPreferences.edit()
+                editor.putBoolean(KEY_USER_LOGGED_IN, true)
+                editor.putString("user_name", userName)  // ← GUARDAR EL NOMBRE
+                editor.putString("user_email", userEmail)
+                editor.apply()
+
+                showMessage("¡Bienvenido, $userName!")
                 startMainActivity()
+
             } catch (e: ApiException) {
                 showMessage("Error en login: ${e.message}")
             }
