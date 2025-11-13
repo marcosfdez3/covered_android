@@ -174,13 +174,6 @@ class VerificationFragment : Fragment() {
         // Si tiene espacios, probablemente no es una URL
         if (trimmedText.contains(" ")) return false
 
-        // Si contiene signos de interrogación, es texto normal
-        if (trimmedText.contains("?") || trimmedText.contains("¿")) return false
-
-        // Si contiene palabras comunes de preguntas, es texto normal
-        val palabrasPregunta = listOf("es", "son", "fue", "fueron", "ha", "han", "cómo", "cuándo", "dónde", "por qué", "quién", "cuál")
-        if (palabrasPregunta.any { trimmedText.contains(" $it ") }) return false
-
         val urlIndicators = listOf(
             // Protocolos
             trimmedText.startsWith("http://"),
@@ -327,11 +320,6 @@ class VerificationFragment : Fragment() {
 
     private fun configureResultAppearance(resultado: VerificationResult) {
         val (title, status, textColor) = when (resultado.resultado) {
-            "respondido" -> Triple(  // ← NUEVO estado para preguntas
-                "❓ Pregunta Respondida",
-                "Respondido",
-                "#1977BF"
-            )
             "verificado", "probablemente_verdadero" -> Triple(
                 "✅ Información Verificada",
                 "Verificado",
