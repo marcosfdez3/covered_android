@@ -49,6 +49,7 @@ dependencies {
 
     // Google Sign-In
     implementation("com.google.android.gms:play-services-auth:20.7.0")
+    implementation("com.github.bumptech.glide:glide:4.16.0")
 
     // AndroidX Core
     implementation("androidx.core:core-ktx:1.12.0")
@@ -73,6 +74,8 @@ dependencies {
 
     // Lottie
     implementation("com.airbnb.android:lottie:6.1.0")
+    implementation(libs.androidx.preference.ktx)
+    implementation("androidx.preference:preference-ktx:1.2.1")
 
     // Testing
     testImplementation("junit:junit:4.13.2")

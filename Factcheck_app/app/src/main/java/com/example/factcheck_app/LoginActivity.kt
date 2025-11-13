@@ -3,6 +3,7 @@ package com.example.factcheckapp
 import android.content.Intent
 import android.content.SharedPreferences
 import android.os.Bundle
+import android.widget.TextView
 import android.widget.Toast
 import androidx.appcompat.app.AppCompatActivity
 import com.example.factcheckapp.databinding.ActivityLoginBinding
@@ -10,6 +11,7 @@ import com.google.android.gms.auth.api.signin.GoogleSignIn
 import com.google.android.gms.auth.api.signin.GoogleSignInClient
 import com.google.android.gms.auth.api.signin.GoogleSignInOptions
 import com.google.android.gms.common.api.ApiException
+import com.google.android.material.navigation.NavigationView
 import com.google.firebase.auth.ktx.auth
 import com.google.firebase.ktx.Firebase
 
@@ -42,6 +44,7 @@ class LoginActivity : AppCompatActivity() {
 
         configureGoogleSignIn()
         setupClickListeners()
+
     }
 
     private fun shouldSkipLogin(): Boolean {
@@ -88,15 +91,17 @@ class LoginActivity : AppCompatActivity() {
                 // ✅ OBTENER Y GUARDAR LA INFORMACIÓN DEL USUARIO
                 val userName = account?.displayName ?: "Usuario"
                 val userEmail = account?.email ?: ""
+                val userPhotoUrl = account?.photoUrl?.toString() ?: ""
 
                 // Guardar en SharedPreferences
                 val editor = sharedPreferences.edit()
                 editor.putBoolean(KEY_USER_LOGGED_IN, true)
                 editor.putString("user_name", userName)  // ← GUARDAR EL NOMBRE
-                editor.putString("user_email", userEmail)
+                editor.putString("user_email", userEmail) // ← GUARDAR EL EMAIL
+                editor.putString("user_photo_url", userPhotoUrl)
                 editor.apply()
+                // Actualizar la UI con el nombre real
 
-                showMessage("¡Bienvenido, $userName!")
                 startMainActivity()
 
             } catch (e: ApiException) {
@@ -104,6 +109,8 @@ class LoginActivity : AppCompatActivity() {
             }
         }
     }
+
+
 
     private fun skipLogin() {
         // Guardar que el usuario eligió saltar el login

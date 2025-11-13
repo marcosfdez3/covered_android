@@ -14,8 +14,6 @@ import android.view.View
 import android.view.ViewGroup
 import android.view.inputmethod.EditorInfo
 import android.view.inputmethod.InputMethodManager
-import android.widget.Button
-import android.widget.EditText
 import android.widget.TextView
 import android.widget.Toast
 import androidx.fragment.app.Fragment
@@ -83,7 +81,6 @@ class VerificationFragment : Fragment() {
             binding.editTextInput.hint = "Pega el link aquí..."
             binding.editTextInput.inputType = InputType.TYPE_TEXT_VARIATION_URI
             binding.editTextInput.text?.clear()
-
         } else {
             // Modo texto normal
             binding.buttonLeft.isSelected = false
@@ -91,7 +88,6 @@ class VerificationFragment : Fragment() {
             binding.editTextInput.hint = "Verifica con Covered..."
             binding.editTextInput.inputType = InputType.TYPE_TEXT_FLAG_MULTI_LINE or InputType.TYPE_CLASS_TEXT
             binding.editTextInput.text?.clear()
-
         }
 
         // Forzar el foco en el EditText
@@ -131,20 +127,103 @@ class VerificationFragment : Fragment() {
             return
         }
 
-        // Validación adicional si está en modo link
-        if (isLinkMode) {
-            if (!isValidUrl(inputText)) {
-                showMessage("Por favor ingresa una URL válida")
-                binding.editTextInput.error = "URL no válida"
+        when {
+            isLinkMode -> {
+                // Modo URL activado - solo aceptar URLs válidas
+                if (!isValidUrl(inputText)) {
+                    showMessage("Por favor ingresa una URL válida (debe empezar con http://, https:// o www.)")
+                    binding.editTextInput.error = "URL no válida"
+                    return
+                }
+                procesarComoURL(inputText)
+            }
+            looksLikeUrl(inputText) -> {
+                // Modo texto pero parece URL - mostrar mensaje específico
+                showUrlDetectedMessage(inputText)
+                binding.editTextInput.error = "Activa el modo link"
                 return
             }
+            else -> {
+                // Modo texto con contenido normal
+                procesarComoTexto(inputText)
+            }
         }
-
-        hideKeyboard()
-        showLoadingState(inputText) // Pasar el texto a verificar
     }
 
-    private fun showLoadingState(textToVerify: String) {
+    private fun showUrlDetectedMessage(inputText: String) {
+        val message = when {
+            inputText.startsWith("http://") || inputText.startsWith("https://") ->
+                "Para verificar URLs, activa el modo link con el botón 🔗 de la izquierda"
+            inputText.startsWith("www.") ->
+                "Parece una dirección web. Activa el modo link para verificar este enlace"
+            inputText.contains(".") && inputText.length < 100 ->
+                "¿Es esto un enlace web? Activa el modo link para verificarlo"
+            else ->
+                "Para verificar enlaces web, activa el modo link con el botón de la izquierda"
+        }
+        showMessage(message)
+    }
+
+    // Función para detectar si un texto parece una URL
+    private fun looksLikeUrl(text: String): Boolean {
+        val trimmedText = text.trim()
+
+        // Si es muy corto, probablemente no es una URL completa
+        if (trimmedText.length < 8) return false
+
+        // Si tiene espacios, probablemente no es una URL
+        if (trimmedText.contains(" ")) return false
+
+        // Si contiene signos de interrogación, es texto normal
+        if (trimmedText.contains("?") || trimmedText.contains("¿")) return false
+
+        // Si contiene palabras comunes de preguntas, es texto normal
+        val palabrasPregunta = listOf("es", "son", "fue", "fueron", "ha", "han", "cómo", "cuándo", "dónde", "por qué", "quién", "cuál")
+        if (palabrasPregunta.any { trimmedText.contains(" $it ") }) return false
+
+        val urlIndicators = listOf(
+            // Protocolos
+            trimmedText.startsWith("http://"),
+            trimmedText.startsWith("https://"),
+            trimmedText.startsWith("www."),
+
+            // Patrones de dominio
+            Pattern.compile("^[a-zA-Z0-9-]+\\.[a-zA-Z]{2,}/").matcher(trimmedText).find(),
+            Pattern.compile("^[a-zA-Z0-9-]+\\.[a-zA-Z]{2,}\\.[a-zA-Z]{2,}").matcher(trimmedText).find(),
+
+            // URLs comunes sin protocolo
+            Pattern.compile("^[a-zA-Z0-9-]+\\.[a-zA-Z]{2,}$").matcher(trimmedText).find() &&
+                    !trimmedText.contains(" ") && trimmedText.length < 50
+        )
+
+        return urlIndicators.any { it } || Patterns.WEB_URL.matcher(trimmedText).matches()
+    }
+
+    // Función para validar URLs (más permisiva para www.)
+    private fun isValidUrl(text: String): Boolean {
+        val normalizedText = if (!text.startsWith("http://") && !text.startsWith("https://") &&
+            text.startsWith("www.")) {
+            "https://$text"
+        } else {
+            text
+        }
+
+        return Patterns.WEB_URL.matcher(normalizedText).matches()
+    }
+
+    private fun procesarComoURL(url: String) {
+        hideKeyboard()
+        showLoadingState(url, esURL = true)
+        binding.editTextInput.text.clear()
+    }
+
+    private fun procesarComoTexto(texto: String) {
+        hideKeyboard()
+        showLoadingState(texto, esURL = false)
+        binding.editTextInput.text.clear()
+    }
+
+    private fun showLoadingState(texto: String, esURL: Boolean) {
         // Ocultar todo excepto el loading
         binding.layoutInfo.visibility = View.GONE
         binding.resultContainer.visibility = View.GONE
@@ -153,11 +232,12 @@ class VerificationFragment : Fragment() {
         binding.progressBarVerificando.visibility = View.VISIBLE
         binding.buttonVerify.isEnabled = false
 
-        // Limpiar el EditText después de guardar el texto
-        binding.editTextInput.text.clear()
-
-        // Llamada REAL a la API con el texto guardado
-        realizarVerificacionReal(textToVerify)
+        // Llamada REAL a la API
+        if (esURL) {
+            realizarVerificacionURL(texto)
+        } else {
+            realizarVerificacionTexto(texto)
+        }
     }
 
     private fun showResultState() {
@@ -173,38 +253,40 @@ class VerificationFragment : Fragment() {
         binding.buttonVerify.isEnabled = true
     }
 
-    private fun isValidUrl(text: String): Boolean {
-        return if (text.startsWith("http://") || text.startsWith("https://")) {
-            Patterns.WEB_URL.matcher(text).matches()
-        } else {
-            // Intentar con https:// por defecto
-            Patterns.WEB_URL.matcher("https://$text").matches()
+    private fun realizarVerificacionURL(url: String) {
+        CoroutineScope(Dispatchers.IO).launch {
+            try {
+                // ✅ Enviar como URL (texto vacío, URL en campo url)
+                val noticia = Noticia(
+                    texto = "", // Texto vacío
+                    url = url,  // URL en el campo correspondiente
+                    usuarioId = "usuario_android",
+                    dispositivoId = android.os.Build.MODEL
+                )
+
+                val resultado = RetrofitInstance.api.verificarNoticia(noticia)
+
+                withContext(Dispatchers.Main) {
+                    mostrarResultadoReal(resultado)
+                }
+            } catch (e: Exception) {
+                withContext(Dispatchers.Main) {
+                    mostrarError(e.message ?: "Error desconocido")
+                }
+            }
         }
     }
 
-    private fun realizarVerificacionReal(texto: String) {
+    private fun realizarVerificacionTexto(texto: String) {
         CoroutineScope(Dispatchers.IO).launch {
             try {
-                // Detectar automáticamente si es URL para enviar correctamente al backend
-                val isUrl = isValidUrl(texto) && !texto.contains(" ")
-
-                val noticia = if (isUrl) {
-                    // Si es URL, enviar como URL y texto vacío
-                    Noticia(
-                        texto = "", // Texto vacío
-                        url = texto,  // URL en el campo correspondiente
-                        usuarioId = "usuario_android",
-                        dispositivoId = android.os.Build.MODEL
-                    )
-                } else {
-                    // Si es texto normal, enviar como texto
-                    Noticia(
-                        texto = texto,
-                        url = null,
-                        usuarioId = "usuario_android",
-                        dispositivoId = android.os.Build.MODEL
-                    )
-                }
+                // ✅ Enviar como texto normal (URL nula)
+                val noticia = Noticia(
+                    texto = texto,
+                    url = null, // URL nula para texto normal
+                    usuarioId = "usuario_android",
+                    dispositivoId = android.os.Build.MODEL
+                )
 
                 val resultado = RetrofitInstance.api.verificarNoticia(noticia)
 
@@ -245,6 +327,11 @@ class VerificationFragment : Fragment() {
 
     private fun configureResultAppearance(resultado: VerificationResult) {
         val (title, status, textColor) = when (resultado.resultado) {
+            "respondido" -> Triple(  // ← NUEVO estado para preguntas
+                "❓ Pregunta Respondida",
+                "Respondido",
+                "#1977BF"
+            )
             "verificado", "probablemente_verdadero" -> Triple(
                 "✅ Información Verificada",
                 "Verificado",

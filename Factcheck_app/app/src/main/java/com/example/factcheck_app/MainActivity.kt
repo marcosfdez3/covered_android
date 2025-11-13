@@ -24,8 +24,12 @@ import kotlinx.coroutines.launch
 import kotlinx.coroutines.withContext
 import android.content.SharedPreferences
 import android.content.Intent
+import android.widget.ImageView
+import android.widget.TextView
+import com.bumptech.glide.Glide
 import com.google.firebase.auth.ktx.auth
 import com.google.firebase.ktx.Firebase
+
 
 
 class MainActivity : AppCompatActivity() {
@@ -72,6 +76,7 @@ class MainActivity : AppCompatActivity() {
         loadInitialFragment()
         cargarHistorialReal()
         setupLoginClickListener()
+        updateUserInfoInHeader()
         onBackPressedDispatcher.addCallback(this) {
             if (binding.drawerLayout.isDrawerOpen(GravityCompat.START)) {
                 binding.drawerLayout.closeDrawer(GravityCompat.START)
@@ -96,6 +101,9 @@ class MainActivity : AppCompatActivity() {
                 // Limpiar preferencias y cerrar sesión
                 sharedPreferences.edit().clear().apply()
                 Firebase.auth.signOut()
+
+                // Actualizar la UI inmediatamente
+                updateUserInfoInHeader()
 
                 // Recargar la app
                 val intent = Intent(this, MainActivity::class.java)
@@ -140,6 +148,7 @@ class MainActivity : AppCompatActivity() {
             override fun onDrawerClosed(drawerView: android.view.View) {}
             override fun onDrawerOpened(drawerView: android.view.View) {
                 cargarHistorialReal()
+                updateUserInfoInHeader()
             }
         })
     }
@@ -274,8 +283,7 @@ class MainActivity : AppCompatActivity() {
                 loadFragment(VerificationFragment())
             }
             R.id.nav_settings -> {
-                // Aquí puedes cargar un fragment de configuración
-                showMessage("Configuración - Próximamente")
+                loadFragment(SettingsFragment()) // ← NUEVO: Cargar fragmento de configuración
             }
         }
         binding.drawerLayout.closeDrawer(GravityCompat.START)
@@ -296,11 +304,57 @@ class MainActivity : AppCompatActivity() {
         android.widget.Toast.makeText(this, message, android.widget.Toast.LENGTH_SHORT).show()
     }
 
-    // En MainActivity
-    private fun loadUserData() {
-        val sharedPreferences = getSharedPreferences("CoveredPrefs", MODE_PRIVATE)
-        val userName = sharedPreferences.getString("user_name", "Invitado")
+    private fun updateUserInfoInHeader() {
+        val navView = findViewById<NavigationView>(R.id.nav_view)
+        val headerView = navView.getHeaderView(0)
+        val tvUserName = headerView.findViewById<TextView>(R.id.tvUserName)
+        val tvUserEmail = headerView.findViewById<TextView>(R.id.tvUserEmail)
+        val btnAuth = headerView.findViewById<Button>(R.id.btnAuth)
+        val imgUserAvatar = headerView.findViewById<ImageView>(R.id.imgUserAvatar)
 
-        
+        val isLogged = sharedPreferences.getBoolean("user_logged_in", false) ||
+                Firebase.auth.currentUser != null
+
+        if (isLogged) {
+            // Obtener información del usuario desde SharedPreferences
+            val userName = sharedPreferences.getString("user_name", "Usuario")
+            val userEmail = sharedPreferences.getString("user_email", "")
+            val userPhotoUrl = sharedPreferences.getString("user_photo_url", "")
+
+            // Actualizar los TextViews
+            tvUserName.text = userName
+            tvUserEmail.text = userEmail ?: "Usuario registrado"
+
+            // Cargar la foto del usuario
+            if (!userPhotoUrl.isNullOrEmpty()) {
+                loadUserPhoto(userPhotoUrl, imgUserAvatar)
+            } else {
+                // Si no hay foto, usar la imagen por defecto
+                imgUserAvatar.setImageResource(R.drawable.button_outline)
+            }
+
+            btnAuth.text = "Cerrar Sesión"
+        } else {
+            // Modo invitado
+            tvUserName.text = "Invitado"
+            tvUserEmail.text = "Inicia sesión para guardar tu historial"
+            imgUserAvatar.setImageResource(R.drawable.button_outline) // Imagen por defecto
+            btnAuth.text = "Iniciar Sesión"
+        }
     }
+
+    private fun loadUserPhoto(photoUrl: String, imageView: ImageView) {
+        try {
+            Glide.with(this)
+                .load(photoUrl)
+                .circleCrop() // Hace la imagen circular
+                .placeholder(R.drawable.button_outline) // Imagen mientras carga
+                .error(R.drawable.button_outline) // Imagen si hay error
+                .into(imageView)
+        } catch (e: Exception) {
+            // En caso de error, usar imagen por defecto
+            imageView.setImageResource(R.drawable.button_outline)
+        }
+    }
+
 }
