@@ -31,7 +31,7 @@
         android:layout_width="match_parent"
         android:layout_height="56dp"
         android:text="Continuar con Google"
-        android:textColor="@color/background_light"
+        android:textColor="@color/white"
         android:background="@drawable/button_google"
         android:drawablePadding="12dp"
         android:layout_marginBottom="16dp" />
@@ -42,7 +42,7 @@
         android:layout_width="match_parent"
         android:layout_height="56dp"
         android:text="Continuar con Email"
-        android:textColor="@color/background_light"
+        android:textColor="@color/white"
         android:background="@drawable/button_login"
         android:drawablePadding="12dp"
         android:layout_marginBottom="32dp" />

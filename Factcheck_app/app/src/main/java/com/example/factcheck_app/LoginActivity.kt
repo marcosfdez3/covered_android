@@ -3,7 +3,6 @@ package com.example.factcheckapp
 import android.content.Intent
 import android.content.SharedPreferences
 import android.os.Bundle
-import android.widget.TextView
 import android.widget.Toast
 import androidx.appcompat.app.AppCompatActivity
 import com.example.factcheckapp.databinding.ActivityLoginBinding
@@ -11,7 +10,8 @@ import com.google.android.gms.auth.api.signin.GoogleSignIn
 import com.google.android.gms.auth.api.signin.GoogleSignInClient
 import com.google.android.gms.auth.api.signin.GoogleSignInOptions
 import com.google.android.gms.common.api.ApiException
-import com.google.android.material.navigation.NavigationView
+import com.google.firebase.auth.FirebaseAuth
+import com.google.firebase.auth.FirebaseUser
 import com.google.firebase.auth.ktx.auth
 import com.google.firebase.ktx.Firebase
 
@@ -20,7 +20,7 @@ class LoginActivity : AppCompatActivity() {
     private lateinit var binding: ActivityLoginBinding
     private lateinit var googleSignInClient: GoogleSignInClient
     private lateinit var sharedPreferences: SharedPreferences
-    private val auth = Firebase.auth
+    private lateinit var auth: FirebaseAuth
 
     companion object {
         private const val RC_SIGN_IN = 9001
@@ -34,6 +34,8 @@ class LoginActivity : AppCompatActivity() {
 
         // Verificar SI ya pasó por login
         sharedPreferences = getSharedPreferences(PREFS_NAME, MODE_PRIVATE)
+        auth = Firebase.auth
+
         if (shouldSkipLogin()) {
             startMainActivity()
             return
@@ -44,7 +46,6 @@ class LoginActivity : AppCompatActivity() {
 
         configureGoogleSignIn()
         setupClickListeners()
-
     }
 
     private fun shouldSkipLogin(): Boolean {
@@ -57,7 +58,7 @@ class LoginActivity : AppCompatActivity() {
         try {
             val gso = GoogleSignInOptions.Builder(GoogleSignInOptions.DEFAULT_SIGN_IN)
                 .requestEmail()
-                .requestProfile()  // ← IMPORTANTE: Solicitar el perfil para obtener el nombre
+                .requestProfile()
                 .build()
             googleSignInClient = GoogleSignIn.getClient(this, gso)
         } catch (e: Exception) {
@@ -70,6 +71,10 @@ class LoginActivity : AppCompatActivity() {
             signInWithGoogle()
         }
 
+        binding.btnEmailLogin.setOnClickListener {
+            showEmailLoginDialog()
+        }
+
         binding.btnSkip.setOnClickListener {
             skipLogin()
         }
@@ -78,6 +83,29 @@ class LoginActivity : AppCompatActivity() {
     private fun signInWithGoogle() {
         val signInIntent = googleSignInClient.signInIntent
         startActivityForResult(signInIntent, RC_SIGN_IN)
+    }
+
+    // LoginActivity.kt (ACTUALIZADO - solo la parte del email)
+    private fun showEmailLoginDialog() {
+        val dialog = EmailLoginDialogFragment()
+        dialog.setOnLoginSuccessListener { user ->
+            onEmailLoginSuccess(user)
+        }
+        dialog.show(supportFragmentManager, "EmailLoginDialog")
+    }
+
+    private fun onEmailLoginSuccess(user: FirebaseUser) {
+        // Guardar información del usuario en SharedPreferences
+        val editor = sharedPreferences.edit()
+        editor.putBoolean(KEY_USER_LOGGED_IN, true)
+        editor.putString("user_name", user.displayName ?: "Usuario")
+        editor.putString("user_email", user.email ?: "")
+        editor.putString("user_photo_url", user.photoUrl?.toString() ?: "")
+        editor.putString("login_method", "email") // Guardar método de login
+        editor.apply()
+
+        showMessage("¡Bienvenido ${user.displayName ?: "Usuario"}!")
+        startMainActivity()
     }
 
     override fun onActivityResult(requestCode: Int, resultCode: Int, data: Intent?) {
@@ -96,11 +124,10 @@ class LoginActivity : AppCompatActivity() {
                 // Guardar en SharedPreferences
                 val editor = sharedPreferences.edit()
                 editor.putBoolean(KEY_USER_LOGGED_IN, true)
-                editor.putString("user_name", userName)  // ← GUARDAR EL NOMBRE
-                editor.putString("user_email", userEmail) // ← GUARDAR EL EMAIL
+                editor.putString("user_name", userName)
+                editor.putString("user_email", userEmail)
                 editor.putString("user_photo_url", userPhotoUrl)
                 editor.apply()
-                // Actualizar la UI con el nombre real
 
                 startMainActivity()
 
@@ -109,8 +136,6 @@ class LoginActivity : AppCompatActivity() {
             }
         }
     }
-
-
 
     private fun skipLogin() {
         // Guardar que el usuario eligió saltar el login
